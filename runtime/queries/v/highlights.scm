@@ -1,112 +1,83 @@
-(comment) @comment
-
-(module_clause
- (identifier) @namespace)
-
-(import_path
- (import_name) @namespace)
-
-(import_alias
- (import_name) @namespace)
-
-(enum_fetch
- (reference_expression) @constant)
-
-(enum_field_definition
- (identifier) @constant)
-
-(global_var_definition
- (identifier) @constant)
-
-(compile_time_if_expression
- condition: (reference_expression) @constant)
-
-(compile_time_if_expression
- condition: (binary_expression
-              left: (reference_expression) @constant
-              right: (reference_expression) @constant))
-
-(compile_time_if_expression
- condition: (binary_expression
-              left: (reference_expression) @constant
-              right: (unary_expression (reference_expression) @constant)))
-
-(label_reference) @label
-
 (parameter_declaration
- name: (identifier) @variable.parameter)
-(receiver
- name: (identifier) @variable.parameter)
+  name: (identifier) @variable.parameter)
 (function_declaration
- name: (identifier) @function)
+  name: (identifier) @function)
 (function_declaration
- receiver: (receiver)
- name: (identifier) @function.method)
-(interface_method_definition
- name: (identifier) @function.method)
+  receiver: (parameter_list)
+  name: (identifier) @function.method)
 
 (call_expression
- name: (selector_expression
-  field: (reference_expression) @function.method))
-
+  function: (identifier) @function)
 (call_expression
- name: (reference_expression) @function)
+  function: (selector_expression
+    field: (identifier) @function.method))
 
-(struct_declaration
- name: (identifier) @type)
-
-(enum_declaration
- name: (identifier) @type)
-
-(interface_declaration
- name: (identifier) @type)
-
-(type_declaration
- name: (identifier) @type)
-
-(struct_field_declaration
- name: (identifier) @variable.other.member)
-
-(field_name) @variable.other.member
-
+(field_identifier) @variable.other.member
 (selector_expression
- field: (reference_expression) @variable.other.member)
+  operand: (identifier) @variable
+  field: (identifier) @variable.other.member)
 
 (int_literal) @constant.numeric.integer
+
+(attribute_declaration) @attribute
+(comment) @comment
+[
+  (c_string_literal)
+  (raw_string_literal)
+  (interpreted_string_literal)
+  (string_interpolation)
+  (rune_literal)
+] @string
+
 (escape_sequence) @constant.character.escape
 
 [
- (c_string_literal)
- (raw_string_literal)
- (interpreted_string_literal)
- (string_interpolation)
- (rune_literal)
-] @string
+  (pointer_type)
+  (array_type)
+] @type
 
-(string_interpolation
- (braced_interpolation_opening) @punctuation.bracket
- (interpolated_expression) @embedded
- (braced_interpolation_closing) @punctuation.bracket)
+(const_spec name: (identifier) @constant)
+(global_var_type_initializer name: (identifier) @constant)
+(global_var_spec name: (identifier) @constant)
+((identifier) @constant (#match? @constant "^[A-Z][A-Z\\d_]*$"))
 
-(attribute) @attribute
 
 [
- (type_reference_expression)
- ] @type
+  (generic_type)
+  (type_identifier)
+] @constructor 
+
+(builtin_type) @type.builtin
 
 [
  (true)
  (false)
 ] @constant.builtin.boolean
 
+
+[
+  (module_identifier)
+  (import_path)
+] @namespace
+
+[
+  (pseudo_comptime_identifier)
+  (label_name)
+] @label
+
+[
+  (identifier)
+] @variable
+
+
 [
   "pub"
   "assert"
+  "go"
   "asm"
   "defer"
   "unsafe"
   "sql"
-  (nil)
   (none)
 ] @keyword
 
@@ -134,17 +105,12 @@
   "lock"
   "rlock"
   "spawn"
-  "break"
-  "continue"
-  "go"
 ] @keyword.control
 
 [
   "if"
-  "$if"
   "select"
   "else"
-  "$else"
   "match"
 ] @keyword.control.conditional
 
@@ -189,7 +155,7 @@
  "]"
 ] @punctuation.bracket
 
-(array_creation) @punctuation.bracket
+(array) @punctuation.bracket
 
 [
  "++"

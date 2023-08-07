@@ -3,10 +3,11 @@
   (function_declaration)
   (if_expression)
   (match_expression)
+  (expression_case)
+  (default_case)
   (for_statement)
   (unsafe_expression)
-  (var_declaration)
-  (const_declaration)
+  (short_var_declaration)
 ] @indent
 
 [

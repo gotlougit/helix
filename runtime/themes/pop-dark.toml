@@ -4,10 +4,10 @@
 # Version: 1.0
 # This theme is based on Nathaniel Webb's VSCodePopTheme <https://github.com/ArtisanByteCrafter/VSCodePopTheme>
 
-info = { fg = 'brownD' }
-hint = { fg = 'yellowH', modifiers = ['bold'] }
-warning = { fg = 'orangeW', modifiers = ['bold'] }
-error = { fg = 'redE', modifiers = ['bold'] }
+info = { fg = 'yellowH', bg = 'brownD' }
+hint = { fg = 'brownD', bg = 'yellowH', modifiers = ['bold'] }
+warning = { fg = 'brownD', bg = 'orangeW', modifiers = ['bold'] }
+error = { fg = 'brownD', bg = 'redE', modifiers = ['bold'] }
 'diagnostic.info'.underline = { color = 'yellowH', style = 'curl' } 
 'diagnostic.hint'.underline = { color = 'yellowH', style = 'curl' } 
 'diagnostic.warning'.underline = { color = 'orangeW', style = 'curl' } 
@@ -40,6 +40,10 @@ error = { fg = 'redE', modifiers = ['bold'] }
 'ui.virtual.whitespace' = { fg = 'brownV' }
 'ui.virtual.indent-guide' = { fg = 'brownR' }
 'ui.virtual.inlay-hint' = {fg = 'brownD', bg = 'brownU'}
+"ui.virtual.jump.single" = { fg = "#ff007c", modifiers = ["bold"] }
+"ui.virtual.jump.multi.first" = { fg = "#00dfff", modifiers = ["bold"] }
+"ui.virtual.jump.multi.rest" = "#2b8db3"
+"ui.virtual.jump.dim" = "#666666"
 'ui.menu' = { fg = 'greyT', bg = 'brownD' }
 'ui.menu.selected' = { fg = 'orangeH', bg = 'brownH' }
 'ui.popup' = { bg = 'brownD' }

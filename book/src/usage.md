@@ -37,35 +37,19 @@ If a register is selected before invoking a change or delete command, the select
 - `"hc` - Store the selection in register `h` and then change it (delete and enter insert mode).
 - `"md` - Store the selection in register `m` and delete it.
 
-### Default registers
-
-Commands that use registers, like yank (`y`), use a default register if none is specified.
-These registers are used as defaults:
+### Special registers
 
 | Register character | Contains              |
 | ---                | ---                   |
 | `/`                | Last search           |
 | `:`                | Last executed command |
 | `"`                | Last yanked text      |
-| `@`                | Last recorded macro   |
+| `_`                | Black hole            |
 
-### Special registers
+The system clipboard is not directly supported by a special register. Instead, special commands and keybindings are provided. Refer to the
+[key map](keymap.md#space-mode) for more details.
 
-Some registers have special behavior when read from and written to.
-
-| Register character | When read              | When written             |
-| ---                | ---                    | ---                      |
-| `_`                | No values are returned | All values are discarded |
-| `#`                | Selection indices (first selection is `1`, second is `2`, etc.) | This register is not writable |
-| `.`                | Contents of the current selections | This register is not writable |
-| `%`                | Name of the current file | This register is not writable |
-| `*`                | Reads from the system clipboard | Joins and yanks to the system clipboard |
-| `+`                | Reads from the primary clipboard | Joins and yanks to the primary clipboard |
-
-When yanking multiple selections to the clipboard registers, the selections
-are joined with newlines. Pasting from these registers will paste multiple
-selections if the clipboard was last yanked to by the Helix session. Otherwise
-the clipboard contents are pasted as one selection.
+The black hole register is a no-op register, meaning that no data will be read or written to it.
 
 ## Surround
 

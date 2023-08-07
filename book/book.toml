@@ -10,7 +10,12 @@ default-theme = "colibri"
 preferred-dark-theme = "colibri"
 git-repository-url = "https://github.com/helix-editor/helix"
 edit-url-template = "https://github.com/helix-editor/helix/edit/master/book/{path}"
+<<<<<<< HEAD
 additional-css = ["custom.css"]
 
 [output.html.search]
 use-boolean-and = true
+||||||| parent of 65162476 (PR 5340)
+additional-css = ["custom.css"]
+=======
+>>>>>>> 65162476 (PR 5340)
