@@ -23,7 +23,7 @@ use helix_core::{
     regex::{self, Regex, RegexBuilder},
     search::{self, CharMatcher},
     selection, shellwords, surround,
-    syntax::LanguageServerFeature,
+    syntax::{BlockCommentToken, LanguageServerFeature},
     text_annotations::TextAnnotations,
     textobject,
     tree_sitter::Node,
@@ -407,6 +407,8 @@ impl MappableCommand {
         completion, "Invoke completion popup",
         hover, "Show docs for item under cursor",
         toggle_comments, "Comment/uncomment selections",
+        toggle_line_comments, "Line comment/uncomment selections",
+        toggle_block_comments, "Block comment/uncomment selections",
         rotate_selections_forward, "Rotate selections forward",
         rotate_selections_backward, "Rotate selections backward",
         rotate_selection_contents_forward, "Rotate selection contents forward",
@@ -4513,16 +4515,120 @@ pub fn completion(cx: &mut Context) {
 }
 
 // comments
-fn toggle_comments(cx: &mut Context) {
+type CommentTransactionFn = fn(
+    token: Option<&str>,
+    tokens: Option<Vec<BlockCommentToken>>,
+    doc: &Rope,
+    selection: &Selection,
+) -> Transaction;
+
+fn toggle_comments_impl(cx: &mut Context, comment_transaction: CommentTransactionFn) {
     let (view, doc) = current!(cx.editor);
-    let token = doc
+    let token: Option<&str> = doc
         .language_config()
-        .and_then(|lc| lc.comment_token.as_ref())
-        .map(|tc| tc.as_ref());
-    let transaction = comment::toggle_line_comments(doc.text(), doc.selection(view.id), token);
+        .and_then(|lc| lc.comment_tokens.as_ref())
+        .map(|tc| tc.first())
+        .unwrap_or(None)
+        .map(|tc| tc.as_str());
+    let tokens: Option<Vec<BlockCommentToken>> = doc
+        .language_config()
+        .and_then(|lc| lc.block_comment_tokens.as_ref().cloned());
+
+    let transaction = comment_transaction(token, tokens, doc.text(), doc.selection(view.id));
 
     doc.apply(&transaction, view.id);
     exit_select_mode(cx);
+}
+
+fn toggle_comments(cx: &mut Context) {
+    toggle_comments_impl(cx, |token, tokens, doc, selection| {
+        let text = doc.slice(..);
+
+        // only have line comment tokens
+        if matches!((token, tokens.clone()), (Some(_), None)) {
+            return comment::toggle_line_comments(doc, selection, token);
+        }
+
+        let split_lines = comment::split_lines_of_selection(text, selection);
+
+        let (line_commented, line_comment_changes) = comment::find_block_comments(
+            tokens
+                .clone()
+                .unwrap_or_else(|| vec![BlockCommentToken::default()]),
+            text,
+            &split_lines,
+        );
+
+        // block commented by line would also be block commented so check this first
+        if line_commented {
+            return comment::create_block_comment_transaction(
+                doc,
+                &split_lines,
+                line_commented,
+                line_comment_changes,
+            )
+            .0;
+        }
+
+        let (block_commented, comment_changes) = comment::find_block_comments(
+            tokens
+                .clone()
+                .unwrap_or_else(|| vec![BlockCommentToken::default()]),
+            text,
+            selection,
+        );
+
+        // check if selection has block comments
+        if block_commented {
+            return comment::create_block_comment_transaction(
+                doc,
+                selection,
+                block_commented,
+                comment_changes,
+            )
+            .0;
+        }
+
+        // not commented and only have block comment tokens
+        if matches!((token, tokens), (None, Some(_))) {
+            return comment::create_block_comment_transaction(
+                doc,
+                &split_lines,
+                line_commented,
+                line_comment_changes,
+            )
+            .0;
+        }
+
+        // not block commented at all and don't have any tokens
+        comment::toggle_line_comments(doc, selection, token)
+    })
+}
+
+fn toggle_line_comments(cx: &mut Context) {
+    toggle_comments_impl(cx, |token, tokens, doc, selection| {
+        match (token, tokens.clone()) {
+            (None, Some(_)) => comment::toggle_block_comments(
+                doc,
+                &comment::split_lines_of_selection(doc.slice(..), selection),
+                tokens.unwrap_or_else(|| vec![BlockCommentToken::default()]),
+            ),
+            _ => comment::toggle_line_comments(doc, selection, token),
+        }
+    });
+}
+
+fn toggle_block_comments(cx: &mut Context) {
+    toggle_comments_impl(cx, |token, tokens, doc, selection| {
+        match (token, tokens.clone()) {
+            (Some(_), None) => comment::toggle_line_comments(doc, selection, token),
+            _ => comment::toggle_block_comments(
+                doc,
+                selection,
+                tokens.unwrap_or_else(|| vec![BlockCommentToken::default()]),
+            ),
+        }
+    });
 }
 
 fn rotate_selections(cx: &mut Context, direction: Direction) {
