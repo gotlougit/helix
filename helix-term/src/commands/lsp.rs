@@ -171,8 +171,8 @@ impl ui::menu::Item for PickerDiagnostic {
         let path = match format {
             DiagnosticsFormat::HideSourcePath => String::new(),
             DiagnosticsFormat::ShowSourcePath => {
-                let file_path = self.url.to_file_path().unwrap();
-                let path = path::get_truncated_path(file_path);
+                let path = self.url.to_file_path().unwrap();
+                let path = helix_core::path::get_relative_path(&path);
                 format!("{}: ", path.to_string_lossy())
             }
         };
@@ -313,7 +313,6 @@ fn diag_picker(
         let location = lsp::Location::new(url.clone(), diag.range);
         Some(location_to_file_location(&location))
     })
-    .truncate_start(false)
 }
 
 pub fn symbol_picker(cx: &mut Context) {

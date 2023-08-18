@@ -287,9 +287,9 @@ pub struct Config {
     pub workspace_lsp_roots: Vec<PathBuf>,
     /// Which line ending to choose for new documents. Defaults to `native`. i.e. `crlf` on Windows, otherwise `lf`.
     pub default_line_ending: LineEndingConfig,
-<<<<<<< HEAD
     /// Enables smart tab
     pub smart_tab: Option<SmartTabConfig>,
+    pub jump_mode: JumpModeConfig,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, Eq, PartialOrd, Ord)]
@@ -306,9 +306,6 @@ impl Default for SmartTabConfig {
             supersede_menu: false,
         }
     }
-||||||| parent of a5df5341 (Implement jump mode)
-=======
-    pub jump_mode: JumpModeConfig,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -327,10 +324,9 @@ impl Default for JumpModeConfig {
         JumpModeConfig {
             dim_during_jump: true,
             num_chars_before_label: 1,
-            jump_keys: String::from("jwetovxqpdygfblzhckisuranm"),
+            jump_keys: String::from("arstgmneiofuwydh"),
         }
     }
->>>>>>> a5df5341 (Implement jump mode)
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -868,12 +864,8 @@ impl Default for Config {
             completion_replace: false,
             workspace_lsp_roots: Vec::new(),
             default_line_ending: LineEndingConfig::default(),
-<<<<<<< HEAD
             smart_tab: Some(SmartTabConfig::default()),
-||||||| parent of a5df5341 (Implement jump mode)
-=======
             jump_mode: JumpModeConfig::default(),
->>>>>>> a5df5341 (Implement jump mode)
         }
     }
 }

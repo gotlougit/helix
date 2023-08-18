@@ -64,16 +64,8 @@ use crate::{
 };
 
 use crate::job::{self, Jobs};
-<<<<<<< HEAD
 use futures_util::{stream::FuturesUnordered, TryStreamExt};
-use std::{collections::HashMap, fmt, future::Future};
-||||||| parent of a5df5341 (Implement jump mode)
-use futures_util::{stream::FuturesUnordered, StreamExt, TryStreamExt};
-use std::{collections::HashMap, fmt, future::Future};
-=======
-use futures_util::{stream::FuturesUnordered, StreamExt, TryStreamExt};
 use std::{cmp::Ordering, collections::HashMap, fmt, future::Future};
->>>>>>> a5df5341 (Implement jump mode)
 use std::{collections::HashSet, num::NonZeroUsize};
 
 use std::{
